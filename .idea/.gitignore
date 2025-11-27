@@ -1,9 +1,3 @@
 # Default ignored files
 /shelf/
 /workspace.xml
-
-# Build
-**/build/
-
-#gradle
-**/.gradle/
