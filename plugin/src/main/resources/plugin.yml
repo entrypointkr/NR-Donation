@@ -1,9 +1,0 @@
-name: NR-Donation
-version: '${version}'
-main: net.teujaem.nrDonation.Main
-api-version: '${spigot_api_version}'
-libraries:
-  - org.java-websocket:Java-WebSocket:1.5.6
-commands:
-  nrdonation-reload:
-    permission: nrdonation.reload
