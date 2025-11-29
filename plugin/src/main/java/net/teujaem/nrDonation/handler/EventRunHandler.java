@@ -2,10 +2,7 @@ package net.teujaem.nrDonation.handler;
 
 import net.teujaem.nrDonation.Main;
 import net.teujaem.nrDonation.config.ConfigManager;
-import net.teujaem.nrDonation.event.ChatEvent;
-import net.teujaem.nrDonation.event.DonationEvent;
-import net.teujaem.nrDonation.event.LoginEvent;
-import net.teujaem.nrDonation.event.LogoutEvent;
+import net.teujaem.nrDonation.event.*;
 import net.teujaem.nrDonation.websoket.MCWebSocketServerApplication;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
@@ -214,6 +211,14 @@ public class EventRunHandler {
         });
     }
 
+    private void onSessionSet(Player player) {
+        if (!(player != null || player.isOnline())) return;
+        Bukkit.getScheduler().runTask(Main.getInstance(), () -> {
+            SessionSetEvent sessionSetEvent = new SessionSetEvent(player);
+            Bukkit.getPluginManager().callEvent(sessionSetEvent);
+        });
+    }
+
     private void APISetting(WebSocket ws) {
 
         // 숲 API 세팅 전송
@@ -237,6 +242,9 @@ public class EventRunHandler {
         )) {
             application.sendUser(ws, "put.apiKey//chzzk//" + configManager.getChzzkId() + "//" + configManager.getChzzkSecret());
         }
+
+        Player player = Bukkit.getPlayer(application.getKeyUser(ws));
+        onSessionSet(player);
 
     }
 
