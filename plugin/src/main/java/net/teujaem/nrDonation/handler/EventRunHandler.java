@@ -54,7 +54,7 @@ public class EventRunHandler {
                         sender == null ||
                         eventMessage == null
                     ) return;
-                    onDonaiton(id, flatform, sender, amount, eventMessage);
+                    onDonation(id, flatform, sender, amount, eventMessage);
 
                 }
 
@@ -107,7 +107,7 @@ public class EventRunHandler {
                 String sender = messages[4];
                 int amount = Integer.parseInt(messages[5]);
                 String eventMessage = messages[6];
-                onDonaiton(player, flatform, sender, amount, eventMessage);
+                onDonation(player, flatform, sender, amount, eventMessage);
             }
             if (eventType.equals("chat")) {
                 String sender = messages[4];
@@ -123,7 +123,7 @@ public class EventRunHandler {
         }
     }
 
-    private void onDonaiton(String id, String flatform, String sender, int amount, String eventMessage) {
+    private void onDonation(String id, String flatform, String sender, int amount, String eventMessage) {
         Player player = Bukkit.getPlayer(id);
 
         if (player != null && player.isOnline()) { // 유저가 backend server에 접속중이면 이벤트 처리
@@ -179,7 +179,7 @@ public class EventRunHandler {
         }
     }
 
-    private void onDonaiton(Player player, String flatform, String sender, int amount, String eventMessage) {
+    private void onDonation(Player player, String flatform, String sender, int amount, String eventMessage) {
         if (!(player != null || player.isOnline())) return;
         Bukkit.getScheduler().runTask(Main.getInstance(), () -> {
             DonationEvent bukkitEvent = new DonationEvent(flatform, sender, amount, eventMessage, player);

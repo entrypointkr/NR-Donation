@@ -61,7 +61,7 @@ public class NrDonationClient implements ClientModInitializer {
                 if (event.equals("login")) {
                     messageHandler.loginSuccess();
                     MCWebSocketSendMessage mcWebSocketSendMessage = new MCWebSocketSendMessage();
-                    mcWebSocketSendMessage.to("event//eventLogin//" + platform);
+                    mcWebSocketSendMessage.to("event//login//" + platform);
                 }
                 if (event.equals("loginTry")) {
                     if (platform.equals("soop")) login(PlatformType.SOOP);
