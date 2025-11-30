@@ -42,7 +42,10 @@ public class EventRunHandler {
                     String flatform = messages[3];
                     String sender = messages[4];
                     int amount;
-                    String eventMessage = messages[6];
+                    String eventMessage = "null";
+                    if (!(messages[6] == null || messages[6].isEmpty())) {
+                        eventMessage = messages[6];
+                    }
                     //예외처리
                     try {
                         amount = Integer.parseInt(messages[5]);
@@ -51,8 +54,7 @@ public class EventRunHandler {
                     }
                     if (
                         flatform == null ||
-                        sender == null ||
-                        eventMessage == null
+                        sender == null
                     ) return;
                     onDonation(id, flatform, sender, amount, eventMessage);
 
@@ -61,11 +63,13 @@ public class EventRunHandler {
                 if (eventType.equals("chat")) {
                     String flatform = messages[3];
                     String sender = messages[4];
-                    String eventMessage = messages[5];
+                    String eventMessage = "null";
+                    if (!(messages[5] == null || messages[5].isEmpty())) {
+                        eventMessage = messages[5];
+                    }
                     if ( //예외처리
                         flatform == null ||
-                        sender == null ||
-                        eventMessage == null
+                        sender == null
                     ) return;
                     onChat(id, flatform, sender, eventMessage);
                 }
