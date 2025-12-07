@@ -48,6 +48,7 @@ public class NrDonationClient implements ClientModInitializer {
 
         loadCommand();
 
+        //서버 접속시 메인 시스템 연결 (player null 방지용)
         ClientPlayConnectionEvents.JOIN.register((handler, sender, client) -> {
 
             mainAPI = new MainAPI(MinecraftClient.getInstance().player.getName().getString());
@@ -87,6 +88,7 @@ public class NrDonationClient implements ClientModInitializer {
 
     }
 
+    //클라이언트 커맨드 추가
     private void loadCommand() {
 
         ClientCommandRegistrationCallback.EVENT.register((dispatcher, registryAccess) -> {
@@ -118,6 +120,7 @@ public class NrDonationClient implements ClientModInitializer {
 
     }
 
+    //로그인 시도
     private void login(PlatformType platformType) {
         if (platformType.equals(PlatformType.SOOP)) {
             if (isLoginReturnType(PlatformType.SOOP)) {
@@ -146,6 +149,7 @@ public class NrDonationClient implements ClientModInitializer {
         }
     }
 
+    //로그아웃 시도
     private void logout(PlatformType platformType) {
         if (!isLogin(platformType)) {
             messageHandler.alreadyLogout();
@@ -172,6 +176,7 @@ public class NrDonationClient implements ClientModInitializer {
         mcWebSocketSendMessage.to("event//logout//" + platformType.toString().toLowerCase());
     }
 
+    //로그인 시도 실패이유
     private boolean isLoginReturnType(PlatformType platformType) {
         if (isLogin(platformType)) {
             messageHandler.alreadyLogin();
@@ -194,18 +199,22 @@ public class NrDonationClient implements ClientModInitializer {
         return false;
     }
 
+    //로그인중인지 확인
     private boolean isLoginTrying() {
         return dataClassManager.getLoginPlatform().getPlatformType() != null;
     }
 
+    //api key가 전달 되었는지 확인
     private boolean isEmptyAPI(PlatformType platformType) {
         return (dataClassManager.getApiKey().getId(platformType) == null || dataClassManager.getApiKey().getSecret(platformType) == null);
     }
 
+    //nodejs 서버가 전달 되었는지 확인
     private boolean isEmptyNodeJSUrl() {
         return dataClassManager.getNodeJSUrl().getURL() == null;
     }
 
+    //로그인 상태인지 감지
     private boolean isLogin(PlatformType platformType) {
         if (platformType.equals(PlatformType.SOOP)) {
             return dataClassManager.getAccessToken().getSoop() != null;
@@ -216,6 +225,7 @@ public class NrDonationClient implements ClientModInitializer {
         return false;
     }
 
+    //로그인 페이지 열기
     private void openLoginPage(URI url) {
         messageHandler.loginAttempt(url);
         Util.getOperatingSystem().open(url);
