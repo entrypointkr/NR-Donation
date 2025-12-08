@@ -2,6 +2,7 @@ plugins {
     id 'eclipse'
     id 'idea'
     id 'net.minecraftforge.gradle' version '[6.0.16,6.2)'
+    alias(libs.plugins.shadow)
 }
 
 base {
@@ -47,14 +48,34 @@ minecraft {
 sourceSets.main.resources { srcDir 'src/generated/resources' }
 
 repositories {
-
+    mavenCentral()
 }
 
 dependencies {
     minecraft "net.minecraftforge:forge:${forge_mc_version}-${forge_version}"
-    implementation('net.sf.jopt-simple:jopt-simple:5.0.4') { version { strictly '5.0.4' } }
-    implementation(project(":common"))
-    implementation("org.yaml:snakeyaml:2.5")
+
+    // ===== 외부 라이브러리 =====
+    shadow(libs.gson)
+    shadow(libs.java.websocket)
+    shadow(libs.socket.io.client)
+    shadow(libs.engine.io.client)
+    shadow(libs.json)
+    shadow(libs.kotlin.stdlib)
+    shadow(libs.okio)
+    shadow(libs.okhttp)
+    shadow(libs.okhttpSse)
+    shadow(libs.snakeyaml)
+    shadow(libs.jackson.annotations)
+    shadow(libs.jackson.databind)
+    shadow(libs.jackson.core)
+    shadow(project(":common"))
+}
+
+tasks.shadowJar {
+    configurations.add(project.configurations.shadow)
+    exclude('META-INF/**')
+    relocate("org.slf4j", "shadow.slf4j")
+    finalizedBy 'reobfShadowJar'
 }
 
 tasks.named('processResources', ProcessResources).configure {
@@ -84,6 +105,13 @@ tasks.named('jar', Jar).configure {
     }
     finalizedBy 'reobfJar'
 }
+
+// ForgeGradle 기본 reobf 비활성화 (1.12.2에서 동작 안함)
+reobf {
+    create('shadowJar')
+}
+
+assemble.dependsOn(shadowJar)
 
 tasks.withType(JavaCompile).configureEach {
     options.encoding = 'UTF-8' // Use the UTF-8 charset for Java compilation
