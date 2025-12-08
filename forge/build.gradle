@@ -2,20 +2,20 @@ plugins {
     id 'eclipse'
     id 'idea'
     id 'net.minecraftforge.gradle' version '[6.0.16,6.2)'
+    alias(libs.plugins.shadow)
 }
 
 base {
-    archivesBaseName = "${project.rootProject.name}"
-    version = "${project.version}-forge+mc${project.minecraft_version}"
+    archivesName = "${project.rootProject.name}"
+    version = "${project.version}-forge+mc${project.forge_mc_version}"
 }
 
 java {
-    toolchain.languageVersion = JavaLanguageVersion.of(project.java_version)
+    toolchain.languageVersion = JavaLanguageVersion.of(project.forge_java_version)
 }
 
 minecraft {
-    mappings channel: mapping_channel, version: project.minecraft_version
-    reobf = false
+    mappings channel: mapping_channel, version: mapping_version
     copyIdeResources = true
     runs {
         configureEach {
@@ -48,26 +48,47 @@ minecraft {
 sourceSets.main.resources { srcDir 'src/generated/resources' }
 
 repositories {
-
+    mavenCentral()
 }
 
 dependencies {
-    minecraft "net.minecraftforge:forge:${minecraft_version}-${forge_version}"
-    implementation('net.sf.jopt-simple:jopt-simple:5.0.4') { version { strictly '5.0.4' } }
-    implementation(project(":common"))
-    implementation("org.yaml:snakeyaml:2.5")
+    minecraft "net.minecraftforge:forge:${forge_mc_version}-${forge_version}"
+
+    // ===== 외부 라이브러리 =====
+    shadow(libs.gson)
+    shadow(libs.java.websocket)
+    shadow(libs.socket.io.client)
+    shadow(libs.engine.io.client)
+    shadow(libs.json)
+    shadow(libs.kotlin.stdlib)
+    shadow(libs.okio)
+    shadow(libs.okhttp)
+    shadow(libs.okhttpSse)
+    shadow(libs.snakeyaml)
+    shadow(libs.jackson.annotations)
+    shadow(libs.jackson.databind)
+    shadow(libs.jackson.core)
+    shadow(project(":common"))
+}
+
+tasks.shadowJar {
+    configurations.add(project.configurations.shadow)
+    exclude('META-INF/**')
+    relocate("org.slf4j", "shadow.slf4j")
+    finalizedBy 'reobfShadowJar'
 }
 
 tasks.named('processResources', ProcessResources).configure {
-    var replaceProperties = [minecraft_version   : minecraft_version, minecraft_version_range: minecraft_version_range,
+    var replaceProperties = [minecraft_version   : forge_mc_version, minecraft_version_range: minecraft_version_range,
                              forge_version       : forge_version, forge_version_range: forge_version_range,
                              loader_version_range: loader_version_range,
                              mod_id              : project.rootProject.name, mod_name: project.rootProject.name, mod_license: mod_license, mod_version: project.version,
-                             mod_authors         : mod_authors, mod_description: mod_description,]
+                             mod_authors         : mod_authors, mod_description: mod_description,
+                             description         : project.ext.description, version: version]
 
     inputs.properties replaceProperties
 
-    filesMatching(['META-INF/mods.toml', 'pack.mcmeta']) {
+    filesMatching(['mcmod.info']) {
         expand replaceProperties + [project: project]
     }
 }
@@ -82,7 +103,14 @@ tasks.named('jar', Jar).configure {
                     "Implementation-Vendor"   : mod_authors,
                     "Implementation-Timestamp": new Date().format("yyyy-MM-dd'T'HH:mm:ssZ")])
     }
+    finalizedBy 'reobfJar'
 }
+
+reobf {
+    create('shadowJar')
+}
+
+assemble.dependsOn(shadowJar)
 
 tasks.withType(JavaCompile).configureEach {
     options.encoding = 'UTF-8' // Use the UTF-8 charset for Java compilation
