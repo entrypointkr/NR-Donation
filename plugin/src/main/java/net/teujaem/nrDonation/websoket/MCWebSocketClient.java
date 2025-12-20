@@ -21,11 +21,14 @@ public class MCWebSocketClient extends WebSocketClient {
     public void onOpen(ServerHandshake handshakedata) {
         Bukkit.getLogger().info("WebSocket 클라이언트 연결 완료");
         String id = String.valueOf(UUID.randomUUID()).replace("-", "");
-        send("setSessionsId//" + id);
+        send("server//setSessionsId//" + id);
     }
 
     @Override
     public void onMessage(String message) {
+        if (message == null) return;
+        if (message.isEmpty()) return;
+        if (!message.contains("//")) return;
         String[] messages = message.split("//");
         EventRunHandler eventRunHandler = new EventRunHandler();
         eventRunHandler.ofClient(messages);

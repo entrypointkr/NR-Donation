@@ -31,12 +31,19 @@ public class MCWebSocketServer extends WebSocketServer {
             String key = getKeyUser(conn);
             SESSIONS_CLIENT_ID.remove(key);
         }
+        if (SESSIONS_SERVER_ID.containsValue(conn)) {
+            String key = getKeyUser(conn);
+            SESSIONS_SERVER_ID.remove(key);
+        }
         Bukkit.getLogger().info("close: " + reason);
     }
 
     @Override
     public void onMessage(WebSocket conn, String message) {
         Bukkit.getLogger().info(message);
+        if (message == null) return;
+        if (message.isEmpty()) return;
+        if (!message.contains("//")) return;
         String[] messages = message.split("//");
         EventRunHandler eventRunHandler = new EventRunHandler();
         eventRunHandler.ofServer(conn, messages);
@@ -54,7 +61,9 @@ public class MCWebSocketServer extends WebSocketServer {
 
     public void broadcastServer(String message) {
         for (WebSocket ws : SESSIONS_SERVER_ID.values()) {
-            ws.send(message);
+            if (ws != null && ws.isOpen()) {
+                ws.send(message);
+            }
         }
     }
 
