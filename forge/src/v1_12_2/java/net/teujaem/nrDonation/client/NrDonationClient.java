@@ -8,7 +8,9 @@ import net.minecraft.server.MinecraftServer;
 import net.minecraftforge.client.ClientCommandHandler;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
+import net.minecraftforge.fml.common.gameevent.TickEvent;
 import net.minecraftforge.fml.common.network.FMLNetworkEvent;
+import net.teujaem.nrDonation.NrDonation;
 import net.teujaem.nrDonation.client.config.ConfigManager;
 import net.teujaem.nrDonation.common.MainAPI;
 import net.teujaem.nrDonation.common.data.PlatformType;
@@ -53,27 +55,27 @@ public class NrDonationClient {
         MinecraftForge.EVENT_BUS.register(this);
     }
 
-//    @SubscribeEvent
-//    public void onTick(TickEvent.ClientTickEvent e) {
-//        if (e.phase == TickEvent.Phase.START) {
-//            ArrayList<Runnable> tasks = new ArrayList<>(this.tasks);
-//            this.tasks.clear();
-//            for (Runnable task : tasks) {
-//                try {
-//                    task.run();
-//                } catch (Exception ex) {
-//                    NrDonation.getLogger().log(Level.WARN, "Error while executing task", ex);
-//                }
-//            }
-//        }
-//    }
+    @SubscribeEvent
+    public void onTick(TickEvent.ClientTickEvent e) {
+        if (e.phase == TickEvent.Phase.START) {
+            ArrayList<Runnable> tasks = new ArrayList<>(this.tasks);
+            this.tasks.clear();
+            for (Runnable task : tasks) {
+                try {
+                    task.run();
+                } catch (Exception ex) {
+                    NrDonation.getLogger().warn("Error while executing task", ex);
+                }
+            }
+        }
+    }
 
     @SubscribeEvent
     public void onClientConnectedToServer(FMLNetworkEvent.ClientConnectedToServerEvent event) {
         scheduleInitializeOnJoin();
     }
 
-    private void scheduleInitializeOnJoin() {
+    public void scheduleInitializeOnJoin() {
         Minecraft mc = Minecraft.getMinecraft();
         EntityPlayerSP player = mc.player;
         if (player != null) {
