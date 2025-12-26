@@ -121,3 +121,16 @@ sourceSets.each {
     it.output.resourcesDir = dir
     it.java.destinationDirectory = dir
 }
+
+def versionDir = "src/v${project.forge_mc_version.replace('.', '_')}"
+
+sourceSets {
+    main {
+        java {
+            srcDirs("$versionDir/java")
+        }
+        resources {
+            srcDirs("$versionDir/resources")
+        }
+    }
+}

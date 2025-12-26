@@ -8,9 +8,7 @@ import net.minecraft.server.MinecraftServer;
 import net.minecraftforge.client.ClientCommandHandler;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
-import net.minecraftforge.fml.common.gameevent.TickEvent;
 import net.minecraftforge.fml.common.network.FMLNetworkEvent;
-import net.teujaem.nrDonation.NrDonation;
 import net.teujaem.nrDonation.client.config.ConfigManager;
 import net.teujaem.nrDonation.common.MainAPI;
 import net.teujaem.nrDonation.common.data.PlatformType;
@@ -21,18 +19,14 @@ import net.teujaem.nrDonation.common.manager.DataClassManager;
 import net.teujaem.nrDonation.common.server.CallbackServer;
 import net.teujaem.nrDonation.common.websocket.sender.MCWebSocketSendMessage;
 import net.teujaem.nrDonation.handler.MessageHandler;
-import org.apache.logging.log4j.Level;
 
 import java.awt.*;
 import java.io.IOException;
 import java.net.URI;
-import java.util.ArrayDeque;
 import java.util.ArrayList;
-import java.util.Deque;
 import java.util.List;
 
 public class NrDonationClient {
-
     private static NrDonationClient instance;
 
     private static DataClassManager dataClassManager;
@@ -59,20 +53,20 @@ public class NrDonationClient {
         MinecraftForge.EVENT_BUS.register(this);
     }
 
-    @SubscribeEvent
-    public void onTick(TickEvent.ClientTickEvent e) {
-        if (e.phase == TickEvent.Phase.START) {
-            ArrayList<Runnable> tasks = new ArrayList<>(this.tasks);
-            this.tasks.clear();
-            for (Runnable task : tasks) {
-                try {
-                    task.run();
-                } catch (Exception ex) {
-                    NrDonation.getLogger().log(Level.WARN, "Error while executing task", ex);
-                }
-            }
-        }
-    }
+//    @SubscribeEvent
+//    public void onTick(TickEvent.ClientTickEvent e) {
+//        if (e.phase == TickEvent.Phase.START) {
+//            ArrayList<Runnable> tasks = new ArrayList<>(this.tasks);
+//            this.tasks.clear();
+//            for (Runnable task : tasks) {
+//                try {
+//                    task.run();
+//                } catch (Exception ex) {
+//                    NrDonation.getLogger().log(Level.WARN, "Error while executing task", ex);
+//                }
+//            }
+//        }
+//    }
 
     @SubscribeEvent
     public void onClientConnectedToServer(FMLNetworkEvent.ClientConnectedToServerEvent event) {
@@ -111,7 +105,7 @@ public class NrDonationClient {
         });
 
         // 마인크래프트 config 로딩
-        new ConfigManager();
+        new ConfigManager(Minecraft.getMinecraft().mcDataDir);
 
         // 메인 시스템에 data 관리 class 로딩
         dataClassManager = mainAPI.getDataClassManager();

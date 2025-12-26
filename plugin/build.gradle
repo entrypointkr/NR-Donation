@@ -20,8 +20,8 @@ processResources {
     filteringCharset "UTF-8"
 
     filesMatching("plugin.yml") {
-        expand "version": project.version,
-                "spigot_api_version": project.spigot_api_version
+        expand "version": project.version
+//                "spigot_api_version": project.spigot_api_version
     }
 }
 

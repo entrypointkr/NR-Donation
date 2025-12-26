@@ -1,9 +1,7 @@
 package net.teujaem.nrDonation.client.config;
 
-import net.minecraft.client.Minecraft;
 import net.teujaem.nrDonation.NrDonation;
 import net.teujaem.nrDonation.client.NrDonationClient;
-import org.apache.logging.log4j.Level;
 import org.yaml.snakeyaml.Yaml;
 
 import java.io.File;
@@ -14,6 +12,7 @@ import java.util.Map;
 
 @SuppressWarnings("unchecked")
 public class ConfigManager {
+    private final File gameDirectory;
     private Map<String, Object> configValues;
     private String ip;
     private int port;
@@ -21,12 +20,13 @@ public class ConfigManager {
     private boolean sendChat;
     private static final String FILE_NAME = "NRDonationConfig.yml";
 
-    public ConfigManager() {
-        this.load();
+    public ConfigManager(File gameDirectory) {
+        this.gameDirectory = gameDirectory;
+        load();
     }
 
     private void load() {
-        File configDir = new File(Minecraft.getMinecraft().mcDataDir, "config");
+        File configDir = new File(gameDirectory, "config");
         File configFile = new File(configDir, FILE_NAME);
 
         if (!configFile.exists()) {
@@ -82,7 +82,7 @@ public class ConfigManager {
                 this.sendChat = true;
             }
         } catch (IOException e) {
-            NrDonation.getLogger().log(Level.WARN, "Error while reading NRDonationConfig.yml!");
+            NrDonation.getLogger().warn("Error while reading NRDonationConfig.yml!");
         }
 
         NrDonationClient.getInstance().getMainAPI().getDataClassManager().getConfigManager().setIp(this.ip);
